@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema do Professor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('verde.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: white;
+        }
+        section {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 90%;
+            max-width: 500px;
+        }
+        .active {
+            display: block;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        input, button, textarea, select {
+            width: 95%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            border: 1px solid #4CAF50;
+            outline: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+        nav ul li {
+            margin: 10px 0;
+            width: 100%;
+        }
+        nav ul li button {
+            width: 100%;
+        }
+        .turmas-container, .atividades-container {
+            margin-top: 20px;
+        }
+        .turma {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            background-color: #f8f2f2;
+            transition: background-color 0.3s;
+            color: #45a049;
+        }
+        .turma:hover {
+            background-color: #c9c4c4;
+        }
+        .atividade {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+            color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tela de Login -->
+    <section id="login" class="active">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+    </section>
+
+    <!-- Tela Principal do Professor -->
+    <section id="dashboard">
+        <h1>Bem-vindo, Professor!</h1>
+        <nav>
+            <ul>
+                <li><button onclick="showSection('cadastroTurma')">Cadastrar Turma</button></li>
+                <li><button onclick="listarTurmas()">Listar Turmas</button></li>
+                <li><button onclick="showSection('cadastroAtividade')">Cadastrar Atividade</button></li>
+                <li><button onclick="showSection('cadastroAluno')">Cadastrar Aluno</button></li>
+                <li><button onclick="visualizarAtividades()">Visualizar Atividades</button></li>
+                <li><button onclick="logout()">Sair</button></li>
+            </ul>
+        </nav>
+    </section>
+
+    <!-- Cadastro de Turma -->
+    <section id="cadastroTurma">
+        <h2>Cadastrar Turma</h2>
+        <form id="turmaForm">
+            <input type="text" id="turmaNome" placeholder="Nome da Turma" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Listar Turmas do Professor -->
+    <section id="listarTurmas">
+        <h2>Suas Turmas</h2>
+        <div id="turmasList"></div>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Cadastro de Alunos com seleção de Turma -->
+    <section id="cadastroAluno">
+        <h2>Cadastrar Aluno</h2>
+        <form id="alunoForm">
+            <input type="text" id="alunoNome" placeholder="Nome do Aluno" required>
+            <select id="turmaSelect" required>
+                <option value="" disabled selected>Selecione uma turma</option>
+            </select>
+            <button type="submit">Cadastrar Aluno</button>
+        </form>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Cadastro de Atividade -->
+    <section id="cadastroAtividade">
+        <h2>Cadastrar Atividade</h2>
+        <form id="activityForm">
+            <input type="text" id="atividadeNome" placeholder="Nome da Atividade" required>
+            <textarea id="atividadeDescricao" placeholder="Descrição da Atividade" required></textarea>
+            <input type="date" id="dataEntrega" placeholder="Data de Entrega" required>
+            <select id="atividadeTurmaSelect" required>
+                <option value="" disabled selected>Selecione uma turma</option>
+            </select>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Visualizar Atividades -->
+    <section id="visualizarAtividades">
+        <h2>Atividades Cadastradas</h2>
+        <div id="atividadesList"></div>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Tela de Atividades da Turma -->
+    <section id="atividadesTurma">
+        <h2>Atividades da Turma</h2>
+        <div id="atividadesListTurma"></div>
+        <button onclick="showSection('dashboard')">Voltar</button>
+    </section>
+
+    <!-- Logout -->
+    <section id="logout">
+        <h2>Você saiu do sistema!</h2>
+        <button onclick="showSection('login')">Voltar ao Login</button>
+    </section>
+
+    <script>
+        let turmas = JSON.parse(localStorage.getItem('turmas')) || [];
+        let atividades = JSON.parse(localStorage.getItem('atividades')) || [];
+
+        // Função para mostrar a seção desejada
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Simulação do processo de login
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Autenticação fictícia
+            if (username === 'professor' && password === '1234') {
+                localStorage.setItem('loggedIn', 'true');
+                showSection('dashboard');
+            } else {
+                alert('Credenciais inválidas!');
+            }
+        });
+
+        // Verifica se o usuário está logado e direciona para a tela correta
+        window.onload = function() {
+            popularSelectTurmas();
+            if (localStorage.getItem('loggedIn') === 'true') {
+                showSection('dashboard');
+            } else {
+                showSection('login');
+            }
+        };
+
+        // Cadastro de turma
+        document.getElementById('turmaForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const turmaNome = document.getElementById('turmaNome').value;
+            turmas.push({ nome: turmaNome, alunos: [] });
+            localStorage.setItem('turmas', JSON.stringify(turmas));
+            alert('Turma cadastrada com sucesso!');
+            showSection('dashboard');
+        });
+
+        // Listar Turmas do Professor
+        function listarTurmas() {
+            const turmasList = document.getElementById('turmasList');
+            turmasList.innerHTML = '';
+            turmas.forEach((turma, index) => {
+                const turmaDiv = document.createElement('div');
+                turmaDiv.className = 'turma';
+                turmaDiv.innerHTML = `${turma.nome} 
+                    <button onclick="mostrarAlunos(${index})">Ver Alunos</button>
+                    <button onclick="mostrarAtividades(${index})">Ver Atividades</button>
+                    <button onclick="excluirTurma(${index})">Excluir</button>`;
+                turmasList.appendChild(turmaDiv);
+            });
+            showSection('listarTurmas');
+        }
+
+        // Função para excluir turma
+        function excluirTurma(index) {
+            const confirmar = confirm('Tem certeza que deseja excluir esta turma?');
+            if (confirmar) {
+                turmas.splice(index, 1);
+                localStorage.setItem('turmas', JSON.stringify(turmas));
+                listarTurmas();
+                alert('Turma excluída com sucesso!');
+            }
+        }
+
+        // Popular select de turmas
+        function popularSelectTurmas() {
+            const turmaSelect = document.getElementById('turmaSelect');
+            const atividadeTurmaSelect = document.getElementById('atividadeTurmaSelect');
+            turmaSelect.innerHTML = '';
+            atividadeTurmaSelect.innerHTML = '';
+            turmas.forEach((turma, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = turma.nome;
+                turmaSelect.appendChild(option);
+
+                const optionAtividade = document.createElement('option');
+                optionAtividade.value = index;
+                optionAtividade.textContent = turma.nome;
+                atividadeTurmaSelect.appendChild(optionAtividade);
+            });
+        }
+
+        // Cadastrar Aluno
+        document.getElementById('alunoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const alunoNome = document.getElementById('alunoNome').value;
+            const turmaIndex = document.getElementById('turmaSelect').value;
+            turmas[turmaIndex].alunos.push(alunoNome);
+            localStorage.setItem('turmas', JSON.stringify(turmas));
+            alert('Aluno cadastrado com sucesso!');
+            showSection('dashboard');
+        });
+
+        // Cadastrar Atividade
+        document.getElementById('activityForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const atividadeNome = document.getElementById('atividadeNome').value;
+            const atividadeDescricao = document.getElementById('atividadeDescricao').value;
+            const dataEntrega = document.getElementById('dataEntrega').value;
+            const turmaIndex = document.getElementById('atividadeTurmaSelect').value;
+            atividades.push({ nome: atividadeNome, descricao: atividadeDescricao, dataEntrega, turmaIndex });
+            localStorage.setItem('atividades', JSON.stringify(atividades));
+            alert('Atividade cadastrada com sucesso!');
+            showSection('dashboard');
+        });
+
+        // Mostrar alunos da turma
+        function mostrarAlunos(index) {
+            const turma = turmas[index];
+            let alunosList = 'Alunos:\n';
+            if (turma.alunos.length === 0) {
+                alunosList += 'Nenhum aluno cadastrado.';
+            } else {
+                turma.alunos.forEach(aluno => {
+                    alunosList += `- ${aluno}\n`;
+                });
+            }
+            alert(alunosList);
+        }
+
+        // Mostrar atividades da turma
+        function mostrarAtividades(index) {
+            const atividadesTurma = atividades.filter(atividade => atividade.turmaIndex == index);
+            let atividadesList = 'Atividades:\n';
+            if (atividadesTurma.length === 0) {
+                atividadesList += 'Nenhuma atividade cadastrada.';
+            } else {
+                atividadesTurma.forEach(atividade => {
+                    atividadesList += `- ${atividade.nome} (Entrega: ${atividade.dataEntrega})\n`;
+                });
+            }
+            alert(atividadesList);
+        }
+
+        // Visualizar todas as atividades cadastradas
+        function visualizarAtividades() {
+            const atividadesList = document.getElementById('atividadesList');
+            atividadesList.innerHTML = '';
+            if (atividades.length === 0) {
+                atividadesList.innerHTML = '<p>Nenhuma atividade cadastrada.</p>';
+            } else {
+                atividades.forEach(atividade => {
+                    const atividadeDiv = document.createElement('div');
+                    atividadeDiv.className = 'atividade';
+                    atividadeDiv.innerHTML = `${atividade.nome} - ${atividade.descricao} (Entrega: ${atividade.dataEntrega})`;
+                    atividadesList.appendChild(atividadeDiv);
+                });
+            }
+            showSection('visualizarAtividades');
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            showSection('logout');
+        }
+    </script>
+</body>
+</html>
